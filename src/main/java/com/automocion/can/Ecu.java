@@ -1,25 +1,28 @@
 package com.automocion.can;
 
-public class Ecu {
-	// Atributo encapsulado
-	private String nombre;
-	
-	// Constructor
+public class Ecu { // NOTA: E mayúscula
+    
+    // El nombre es privado (Encapsulamiento)
+    private String nombre; 
+    
+    // Constructor para inicializar el nombre
     public Ecu(String nombre) {
         this.nombre = nombre;
-        System.out.println(nombre + " ha sido inicializada y conectada.");
     }
-    
-    // Método para ENVIAR mensajes
+
+    // Método de acceso para que otras clases lean el nombre
+    public String getNombre() {
+        return nombre;
+    }
+
     public void enviarMensaje(int id, byte[] datos) {
-        MensajeCAN mensaje = new MensajeCAN(id, datos);
+        MensajeCAN mensaje = new MensajeCAN(id, datos); 
         System.out.print("[" + nombre + " ENVIA] ");
         mensaje.imprimir();
     }
     
-    // Método para RECIBIR mensajes
+    // Este método será SOBREESCRITO en las clases hijas (Polimorfismo)
     public void recibirMensaje(MensajeCAN mensaje) {
-        System.out.print("[" + nombre + " RECIBE] ");
-        mensaje.imprimir();
+        // La ECU genérica no tiene lógica de filtrado y no reacciona
     }
 }

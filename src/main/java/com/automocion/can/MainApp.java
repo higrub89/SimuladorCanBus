@@ -2,20 +2,31 @@ package com.automocion.can;
 
 public class MainApp {
     public static void main(String[] args) {
-        System.out.println("--- Inicio de Simulación ---");
+        System.out.println("--- INICIO DE SIMULACIÓN CAN BUS CON FILTRADO (POO) ---");
         
-        // 1. Instanciamos dos módulos de control (Objetos de la clase ECU)
-        Ecu ecuMotor = new Ecu("ECU Motor");
-        Ecu ecuFrenos = new Ecu("ECU Frenos");
+        BusCAN busPrincipal = new BusCAN();
 
-        // 2. Enviamos un mensaje desde el Motor (Instancia el objeto MensajeCAN dentro)
-        byte[] datosRPM = "2500 RPM".getBytes();
-        ecuMotor.enviarMensaje(0x123, datosRPM);
-
-        // 3. Enviamos un mensaje de la central de Frenos
-        byte[] datosFreno = "Freno Activo".getBytes();
-        ecuFrenos.enviarMensaje(0x456, datosFreno);
+        // 1. Instanciar y conectar módulos ESPECÍFICOS (Herencia)
+        Ecu ecuLuces = new Ecu("ECU Luces"); // Objeto de la clase base
+        EcuMotor motor = new EcuMotor("ECU Motor"); // Objeto de la clase hija
+        EcuFrenos frenos = new EcuFrenos("ECU Frenos"); // Objeto de la clase hija
         
-        System.out.println("--- Fin de la Tarea ---");
+        busPrincipal.conectarECU(ecuLuces); 
+        busPrincipal.conectarECU(motor);
+        busPrincipal.conectarECU(frenos);
+
+        System.out.println("\n--- Mensaje 1: Velocidad del Motor (ID 0x10A) ---");
+        byte[] datosRPM = "4500 RPM".getBytes();
+        MensajeCAN msgRPM = new MensajeCAN(0x10A, datosRPM);
+        busPrincipal.transmitir(msgRPM); 
+        // Resultado esperado: SOLO ECU Motor debe reaccionar
+
+        System.out.println("\n--- Mensaje 2: Estado del Pedal de Freno (ID 0x200) ---");
+        byte[] datosFreno = "Pedal al 50%".getBytes();
+        MensajeCAN msgFreno = new MensajeCAN(0x200, datosFreno);
+        busPrincipal.transmitir(msgFreno);
+        // Resultado esperado: SOLO ECU Frenos debe reaccionar
+        
+        System.out.println("\n--- SIMULACIÓN EXITOSA ---");
     }
 }
